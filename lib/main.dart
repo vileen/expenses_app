@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'transaction.dart';
+import 'models/transaction.dart';
+import 'widgets/transaction_list.dart';
+import 'widgets/new_transaction.dart';
 
 void main() => runApp(MyApp());
 
@@ -9,71 +11,105 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Expenses App',
+      title: 'Personal expenses',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+        accentColor: Colors.amber,
+        fontFamily: 'Quicksand',
+        textTheme: ThemeData.light().textTheme.copyWith(
+              title: TextStyle(
+                fontFamily: 'OpenSans',
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+        appBarTheme: AppBarTheme(
+          textTheme: ThemeData.light().textTheme.copyWith(
+                title: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+        ),
+      ),
       home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  final List<Transaction> transactions = [
-    Transaction(
-        id: 't1', title: 'New shoes', amount: 69.99, date: DateTime.now()),
-    Transaction(
-        id: 't2', title: 'Wekly groceries', amount: 13.15, date: DateTime.now())
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  final List<Transaction> _userTransactions = [
+//    Transaction(
+//        id: 't1', title: 'New shoes', amount: 69.99, date: DateTime.now()),
+//    Transaction(
+//        id: 't2', title: 'Wekly groceries', amount: 13.15, date: DateTime.now())
   ];
+
+  void _addNewTransaction(String txTitle, double txAmount) {
+    final newTx = Transaction(
+        title: txTitle,
+        amount: txAmount,
+        date: DateTime.now(),
+        id: DateTime.now().toString());
+
+    setState(() {
+      _userTransactions.add(newTx);
+    });
+  }
+
+  void _startAddNewTransaction(BuildContext ctx) {
+    showModalBottomSheet(
+        context: ctx,
+        builder: (_) {
+          return GestureDetector(
+            onTap: () {},
+            child: NewTransaction(_addNewTransaction),
+            behavior: HitTestBehavior.opaque,
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text('Expenses app'),
-      ),
-      body: Column(
-        // takes the width of the child
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        // because the other Card takes all the space available, Column also expands and therefore second card can take that space as well
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          // container so that width control would be possible
-          Container(
-            width: double.infinity,
-            child: Card(
-              child: Text('CHART!'),
-              color: Colors.blue,
-              elevation: 5,
-            ),
-          ),
-          Column(
-            children: transactions.map((tx) {
-              return Card(
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 15,
-                      ),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, width: 2)),
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        tx.amount.toString(),
-                      ),
-                    ),
-                    Column(
-                      children: <Widget>[
-                        Text(tx.title),
-                        Text(tx.date.toString()),
-                      ],
-                    )
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
+        title: Text('Personal expenses'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => _startAddNewTransaction(context),
+          )
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+//         takes the width of the child
+//         mainAxisAlignment: MainAxisAlignment.start, // start is a default
+          children: <Widget>[
+            // container so that width control would be possible
+            Container(
+              width: double.infinity,
+              child: Card(
+                child: Text('CHART!'),
+                color: Colors.blue,
+                elevation: 5,
+              ),
+            ),
+            TransactionList(_userTransactions),
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () => _startAddNewTransaction(context),
       ),
     );
   }
