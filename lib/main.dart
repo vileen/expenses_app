@@ -115,8 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  List<Widget> _buildLandscapeContent(
-      MediaQueryData mediaQuery, AppBar appBar, Widget txListWidget) {
+  List<Widget> _buildLandscapeContent(MediaQueryData mediaQuery,
+      PreferredSizeWidget appBar, Widget txListWidget) {
     return [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -148,8 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
   }
 
-  List<Widget> _buildPortraitContent(
-      MediaQueryData mediaQuery, AppBar appBar, Widget txListWidget) {
+  List<Widget> _buildPortraitContent(MediaQueryData mediaQuery,
+      PreferredSizeWidget appBar, Widget txListWidget) {
     return [
       Container(
         height: (mediaQuery.size.height -
@@ -162,12 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
     ];
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(
-        context); // if MediaQuery changes build also will be triggered
-    final isLandscape = mediaQuery.orientation == Orientation.landscape;
-    final PreferredSizeWidget appBar = Platform.isIOS
+  PreferredSizeWidget _buildAppBarContent() {
+    return Platform.isIOS
         ? CupertinoNavigationBar(
             middle: Text(
               'Personal Expenses',
@@ -193,6 +189,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(
+        context); // if MediaQuery changes build also will be triggered
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final PreferredSizeWidget appBar = _buildAppBarContent();
     final txListWidget = Container(
       height: (mediaQuery.size.height -
               appBar.preferredSize.height -

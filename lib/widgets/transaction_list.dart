@@ -13,34 +13,47 @@ class TransactionList extends StatelessWidget {
   Widget build(BuildContext context) {
     return transactions.isEmpty
         ? LayoutBuilder(
-            builder: (ctx, constraints) {
-              return Column(
-                children: <Widget>[
-                  Text(
-                    'No transactions added yet!',
-                    style: Theme.of(context).textTheme.title,
-                  ),
-                  const SizedBox(
-                    // widget used as separator
-                    height: 20,
-                  ),
-                  Container(
-                    height: constraints.maxHeight * 0.6,
-                    child: Image.asset(
-                      'assets/images/waiting.png',
-                      // it should take the boundaries of the parent and fit the image to fit
-                      // but Column just takes all the width it can take
-                      // wrapping it with Container is the solution
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ],
-              );
-            },
-          )
-        : ListView.builder(
-            itemBuilder: (ctx, index) {
-              return TransactionItem(transactions[index], deleteTransaction);
+      builder: (ctx, constraints) {
+        return Column(
+          children: <Widget>[
+            Text(
+              'No transactions added yet!',
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .title,
+            ),
+            const SizedBox(
+              // widget used as separator
+              height: 20,
+            ),
+            Container(
+              height: constraints.maxHeight * 0.6,
+              child: Image.asset(
+                'assets/images/waiting.png',
+                // it should take the boundaries of the parent and fit the image to fit
+                // but Column just takes all the width it can take
+                // wrapping it with Container is the solution
+                fit: BoxFit.cover,
+              ),
+            ),
+          ],
+        );
+      },
+    )
+        : ListView(
+      children: transactions.map((tx) {
+        return TransactionItem(ValueKey(tx.id),
+            tx, deleteTransaction);
+      }).toList(),
+    );
+
+//    ListView.builder(
+//            itemBuilder: (ctx, index) {
+//              // ValueKey instead of UniqueKey because
+//              // in the second case it would just update the key on every state update
+//              return TransactionItem(ValueKey(transactions[index].id),
+//                  transactions[index], deleteTransaction);
 //                return Card(
 //                  child: Row(
 //                    children: <Widget>[
@@ -81,9 +94,5 @@ class TransactionList extends StatelessWidget {
 //                    ],
 //                  ),
 //                );
-            },
-//      child: ListView(
-            itemCount: transactions.length,
-          );
   }
 }
